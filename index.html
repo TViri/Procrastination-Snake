@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Liminal Space of Delay</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="procrastinating.ico">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #000;
+      color: #fff;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    .title {
+      font-size: 48px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-size: 24px;
+      color: #9CA3AF;
+      margin-bottom: 40px;
+    }
+
+    .text {
+      font-size: 18px;
+      margin: 10px 0;
+      max-width: 600px;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .button {
+      padding: 15px 40px;
+      font-size: 20px;
+      background: #3B82F6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 30px;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s;
+    }
+
+    .button:hover {
+      background: #2563EB;
+      transform: scale(1.05);
+    }
+
+    .button.pulse {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .game-header {
+      width: 640px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 20px;
+    }
+
+    .game-title {
+      font-size: 32px;
+    }
+
+    .game-title.stress {
+      font-family: Impact, 'Arial Black', sans-serif;
+      color: #EF4444;
+      letter-spacing: 2px;
+    }
+
+    .timer {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .timer.stress {
+      color: #EF4444;
+      font-size: 32px;
+    }
+
+    .task-list {
+      font-size: 18px;
+    }
+
+    canvas {
+      background: #1F2937;
+      border: 4px solid #374151;
+      border-radius: 4px;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      animation: fadeIn 0.3s;
+    }
+
+    .overlay.active {
+      display: flex;
+    }
+
+    .overlay.penalty {
+      background: rgba(239, 68, 68, 0.9);
+    }
+
+    .overlay.insight {
+      background: rgba(245, 158, 11, 0.9);
+    }
+
+    .overlay-text {
+      font-size: 36px;
+      text-align: center;
+      max-width: 80%;
+      padding: 40px;
+      line-height: 1.5;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .reflection-text {
+      opacity: 0;
+      animation: fadeInText 1.5s forwards;
+      margin: 20px 0;
+      max-width: 800px;
+      text-align: center;
+      font-size: 24px;
+    }
+
+    @keyframes fadeInText {
+      to { opacity: 1; }
+    }
+
+    .reflection-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .list-item {
+      font-size: 20px;
+      margin: 5px 0;
+    }
+
+    .warning {
+      color: #EF4444;
+      font-weight: bold;
+    }
+
+
+    .insight-item {
+      opacity: 0.5;
+      animation: glow 2s infinite;
+    }
+
+    @keyframes glow {
+      0%, 100% { opacity: 0.5; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .final-badges {
+      display: flex;
+      gap: 20px;
+      font-size: 48px;
+      margin: 30px 0;
+    }
+
+    #attract-screen {
+        transform: scale(0.85);
+        transform-origin: center;
+    }
+
+
+    @keyframes blinkTimer {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(1.1); }
+        }
+
+        .timer.stress {
+        color: #EF4444;
+        font-size: 32px;
+        animation: blinkTimer 1s infinite;
+    }
+
+
+  </style>
+</head>
+<body>
+
+  <!-- Screen 1: Attract -->
+  <div id="attract-screen" class="screen active">
+    <h1 class="title">The Liminal Space of Delay</h1>
+    <p class="subtitle">An Interactive Reflection</p>
+    <canvas id="attract-canvas" width="640" height="640"></canvas>
+    <button class="button pulse" onclick="navigateTo('lvl1-intro')">Press START to Begin</button>
+  </div>
+
+  <!-- Screen 2: Level 1 Intro -->
+  <div id="lvl1-intro" class="screen">
+    <h1 class="title">Level 1: The Task</h1>
+    <p class="text">Your goal is to collect 5 📖 items.</p>
+    <p class="text">Timer: 45 Seconds</p>
+    <button class="button" onclick="startLevel1()">START LEVEL 1</button>
+  </div>
+
+  <!-- Screen 3: Level 1 Game -->
+  <div id="lvl1-game" class="screen">
+    <div class="game-container">
+      <div class="game-header">
+        <h2 class="game-title">Level 1: The Task</h2>
+        <div class="timer" id="lvl1-timer">00:45</div>
+      </div>
+      <div class="task-list" id="lvl1-tasks">COLLECT: 📖 0 / 5</div>
+      <canvas id="lvl1-canvas" width="640" height="640"></canvas>
+    </div>
+  </div>
+
+  <!-- Screen 4: Level 2 Intro -->
+  <div id="lvl2-intro" class="screen">
+    <h1 class="title">Level 2: More Tasks</h1>
+    <p class="text">A new challenge. Collect all the items:</p>
+    <div class="list-item">5 📖</div>
+    <div class="list-item">4 📝</div>
+    <div class="list-item">3 🧠</div>
+    <p class="text">Timer: 60 Seconds</p>
+    <button class="button" onclick="startLevel2()">START LEVEL 2</button>
+  </div>
+
+  <!-- Screen 5: Level 2 Game -->
+  <div id="lvl2-game" class="screen">
+    <div class="game-container">
+      <div class="game-header">
+        <h2 class="game-title">Level 2: More Tasks</h2>
+        <div class="timer" id="lvl2-timer">01:00</div>
+      </div>
+      <div class="task-list" id="lvl2-tasks">COLLECT: 📖 0/5, 📝 0/4, 🧠 0/3</div>
+      <canvas id="lvl2-canvas" width="640" height="640"></canvas>
+    </div>
+  </div>
+
+  <!-- Screen 6: Level 3 Intro -->
+  <div id="lvl3-intro" class="screen">
+    <h1 class="title" style="font-family: Impact, 'Arial Black', sans-serif; color: #EF4444; letter-spacing: 2px;">Level 3: STAY FOCUSED!</h1>
+    <p class="text">Same task. New problems.</p>
+    <div class="list-item">5 📖</div>
+    <div class="list-item">4 📝</div>
+    <div class="list-item">3 🧠</div>
+    <p class="text warning">Distractions are now active.</p>
+    <p class="text warning">Hitting them will cost you time. Try not to procrastinate!</p>
+    <p class="text">Timer: 90 Seconds</p>
+    <button class="button" onclick="startLevel3()">START LEVEL 3</button>
+  </div>
+
+  <!-- Screen 7: Level 3 Game -->
+  <div id="lvl3-game" class="screen">
+    <div class="game-container">
+      <div class="game-header">
+        <h2 class="game-title stress">Level 3: STAY FOCUSED!</h2>
+        <div class="timer stress" id="lvl3-timer">01:30</div>
+      </div>
+      <div class="task-list" id="lvl3-tasks">COLLECT: 📖 0/5, 📝 0/4, 🧠 0/3</div>
+      <canvas id="lvl3-canvas" width="640" height="640"></canvas>
+    </div>
+  </div>
+
+  <!-- Screen 8A: Reflection Failure -->
+  <div id="reflection-failure" class="screen">
+    <div class="reflection-container">
+      <h1 class="reflection-text" style="color: #EF4444; font-size: 48px; animation-delay: 0s;">TASK FAILED</h1>
+      <p class="reflection-text" style="animation-delay: 1.5s;">You ran out of time.</p>
+      <p class="reflection-text" style="animation-delay: 3s;">You might have felt: Stressed. Anxious. Punished.</p>
+      <p class="reflection-text" style="animation-delay: 4.5s; font-size: 32px;">This is TOXIC PRODUCTIVITY.</p>
+      <p class="reflection-text" style="animation-delay: 6s;">We are taught that any pause is a waste.</p>
+      <p class="reflection-text" style="animation-delay: 7.5s;">But what if the delay is the process?</p>
+      <button class="button" style="animation-delay: 9s; opacity: 0; animation: fadeInText 1.5s 9s forwards;" onclick="navigateTo('good-intro')">Press CONTINUE to reframe</button>
+    </div>
+  </div>
+
+  <!-- Screen 8B: Reflection Success -->
+  <div id="reflection-success" class="screen">
+    <div class="reflection-container">
+      <h1 class="reflection-text" style="color: #34D399; font-size: 48px; animation-delay: 0s;">TASK COMPLETE!</h1>
+      <p class="reflection-text" style="animation-delay: 1.5s;">...but how did you feel?</p>
+      <p class="reflection-text" style="animation-delay: 3s;">Rushing? Anxious? Stressed?</p>
+      <p class="reflection-text" style="animation-delay: 4.5s;">You were punished for every 'distraction.' You had no room to breathe.</p>
+      <p class="reflection-text" style="animation-delay: 6s; font-size: 32px;">This is TOXIC PRODUCTIVITY.</p>
+      <p class="reflection-text" style="animation-delay: 7.5s;">We are taught that any pause is a waste.</p>
+      <p class="reflection-text" style="animation-delay: 9s;">But what if the delay is the process?</p>
+      <button class="button" style="animation-delay: 10.5s; opacity: 0; animation: fadeInText 1.5s 10.5s forwards;" onclick="navigateTo('good-intro')">Press CONTINUE to reframe</button>
+    </div>
+  </div>
+
+  <!-- Screen 9: Good Game Intro -->
+  <div id="good-intro" class="screen">
+    <h1 class="title" style="color: #3B82F6;">A New Task</h1>
+    <p class="text">The rules are different now.</p>
+    <p class="text">First, collect 3 📖 items.</p>
+    <button class="button" onclick="startGoodGame()">START</button>
+  </div>
+
+  <!-- Screen 10: Good Game -->
+  <div id="good-game" class="screen">
+      <div class="game-container">
+          <div class="game-header">
+              <h2 class="game-title" style="color: #3B82F6;">A New Task</h2>
+              <div class="task-list" id="good-tasks">COLLECT: 📖 0 / 3</div>
+          </div>
+
+          <canvas id="good-canvas" width="640" height="640"></canvas>
+
+          <div id="explore-message" style="
+            display:none;
+            position:absolute;
+            bottom:40px;
+            right:40px;
+            text-align:right;
+            ">
+            <p id="explore-text" style="
+                font-size:20px;
+                margin-bottom:10px;
+                max-width:240px;
+                line-height:1.4;
+                ">
+                <!-- inserted by JS -->
+            </p>
+            
+            <button class="button" style="font-size:18px; padding:10px 20px;"
+                onclick="finishExplorePhase()">
+                CONTINUE
+            </button>
+        </div>
+
+
+          
+
+      </div>
+  </div>
+
+  <!-- Screen 10B: Explore Intro -->
+  <div id="explore-intro" class="screen">
+      <h1 class="title" style="color:#3B82F6;">A New Task</h1>
+      <p class="text">Just... explore.</p>
+      <button class="button" onclick="startExplorePhase()">CONTINUE</button>
+  </div>
+
+
+
+  <!-- Screen 11: Final Reflection -->
+  <div id="final-reflection" class="screen">
+      <div class="reflection-container">
+
+          <p class="reflection-text" 
+            style="animation-delay: 0s; font-size: 34px; margin-bottom: 30px;">
+              Your 'procrastination' didn't change.
+          </p>
+
+          <p class="reflection-text" 
+            style="animation-delay: 1.5s; font-size: 34px; margin-bottom: 50px;">
+              Only its meaning did.
+          </p>
+
+          <p class="reflection-text" 
+            style="animation-delay: 3.5s; font-size: 38px; color: #F59E0B; margin-bottom: 20px;">
+              Procrastination is inevitable —
+          </p>
+
+          <p class="reflection-text" 
+            style="animation-delay: 5s; font-size: 38px; color: #F59E0B; margin-bottom: 50px;">
+              but it can be generative and inspiring.
+          </p>
+
+          <p class="reflection-text" 
+            style="animation-delay: 6.5s; font-size: 36px; color: #F59E0B;">
+              Delay is not failure — it's a liminal space for creativity.
+          </p>
+
+          <button class="button"
+                  style="animation-delay: 8s; opacity: 0; animation: fadeInText 1.5s 8s forwards; margin-top: 60px;"
+                  onclick="reset()">
+              FINISH
+          </button>
+
+      </div>
+  </div>
+
+
+  <!-- Overlay -->
+  <div id="overlay" class="overlay">
+    <div class="overlay-text" id="overlay-text"></div>
+  </div>
+
+  <script>
+    // Global state
+    let currentScreen = 'attract-screen';
+    let collectedBadges = [];
+
+    // Insight messages
+    const insightMessages = {
+      '📱': [
+        "While scrolling, you found a link to an article that's perfect for your research.",
+        "A friend's post reminded you of a memory, sparking a whole new idea for your story.",
+        "You saw a quote that perfectly summarizes your main argument.",
+        "A random video gave you the visual inspiration for your project's color palette."
+      ],
+      '📺': [
+        "By channel-surfing, you came across a talk that you could definitely use in your thesis!",
+        "The weird plot of that show just gave you the solution to your creative block.",
+        "You noticed the unique set design in a film, inspiring your solution.",
+        "That 'trashy' reality show helped you disengage, and the answer just popped into your head."
+      ],
+      '🛌': [
+        "Stepping away for a nap allowed your subconscious to connect the dots. You wake up with the answer.",
+        "A 'eureka' moment just as you were drifting off! You figured it out.",
+        "Rest isn't failure. It's incubation. Your mind is cleared.",
+        "While daydreaming, you realized the flaw in your original logic."
+      ],
+      '☕': [
+        "Taking a break to get a snack cleared your head. The answer seems obvious now.",
+        "While in the kitchen, you overheard a conversation that sparked an insight.",
+        "The simple change of scenery was all you needed. The problem isn't so hard after all.",
+        "Mind-wandering over coffee, you finally found the connection you were looking for."
+      ],
+      '🎵': [
+        "Listening to that song on repeat helped you get into a flow state.",
+        "A lyric from that song just solved your writer's block!",
+        "The background music helped your mind wander and find the solution.",
+        "You just discovered a new artist that perfectly matches the mood of your project."
+      ],
+      '🍕': [
+        "Stepping away for a slice was the break you needed. The answer is clear now.",
+        "You can't (and shouldn't) work on an empty stomach. You feel recharged.",
+        "While waiting for your food, you had a 'shower thought' moment and solved the problem.",
+        "A good meal, a good pause. Your brain is ready to get back to it."
+      ]
+    };
+
+    // Sound functions (basic Web Audio API)
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playFailSound() {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      oscillator.frequency.value = 200;
+      oscillator.type = 'sawtooth';
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.5);
+    }
+
+    function playChimeSound() {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      oscillator.frequency.value = 800;
+      oscillator.type = 'sine';
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 1);
+    }
+
+    // Navigation
+    function navigateTo(screenId) {
+      document.getElementById(currentScreen).classList.remove('active');
+      currentScreen = screenId;
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    function reset() {
+      collectedBadges = [];
+      navigateTo('attract-screen');
+      initAttractScreen();
+    }
+
+    // Snake Game Class
+    class SnakeGame {
+      constructor(canvasId, config) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.gridSize = 20;
+        this.gridCount = 32;
+        this.snake = [{ x: 16, y: 16 }];
+        this.direction = { x: 1, y: 0 };
+        this.nextDirection = { x: 1, y: 0 };
+        this.items = [];
+        this.distractions = [];
+        this.score = {};
+        this.gameLoop = null;
+        this.config = config;
+        this.isPaused = false;
+        this.insightItemsVisible = false;
+        
+        this.setupControls();
+      }
+
+        runIdleSnake() {
+            if (!this.snakeInitialized) {
+            // create a 7-segment snake in the center
+            this.snake = Array.from({ length: 7 }, (_, i) => ({ x: 10 - i, y: 10 }));
+            this.direction = { x: 1, y: 0 };
+            this.nextDirection = { x: 1, y: 0 };
+            this.snakeInitialized = true;
+            }
+
+            // occasionally turn randomly
+            if (Math.random() < 0.05) {
+            const turns = [
+                { x: 0, y: 1 },
+                { x: 0, y: -1 },
+                { x: 1, y: 0 },
+                { x: -1, y: 0 },
+            ];
+            const newDir = turns[Math.floor(Math.random() * 4)];
+            // prevent 180° turn
+            if (newDir.x !== -this.direction.x && newDir.y !== -this.direction.y) {
+                this.direction = newDir;
+            }
+            }
+
+            // move only every few frames to slow it down
+            const now = Date.now();
+            if (!this.lastIdleMoveTime || now - this.lastIdleMoveTime > 250) { // 250ms per step
+            this.lastIdleMoveTime = now;
+
+            const head = {
+                x: (this.snake[0].x + this.direction.x + this.gridCount) % this.gridCount,
+                y: (this.snake[0].y + this.direction.y + this.gridCount) % this.gridCount,
+            };
+            this.snake.unshift(head);
+            this.snake.pop();
+            }
+
+            this.draw();
+
+        }
+
+
+      setupControls() {
+        document.addEventListener('keydown', (e) => {
+          if (this.isPaused) return;
+          
+          switch(e.key) {
+            case 'ArrowUp':
+              if (this.direction.y === 0) this.nextDirection = { x: 0, y: -1 };
+              break;
+            case 'ArrowDown':
+              if (this.direction.y === 0) this.nextDirection = { x: 0, y: 1 };
+              break;
+            case 'ArrowLeft':
+              if (this.direction.x === 0) this.nextDirection = { x: -1, y: 0 };
+              break;
+            case 'ArrowRight':
+              if (this.direction.x === 0) this.nextDirection = { x: 1, y: 0 };
+              break;
+          }
+        });
+      }
+
+      start() {
+        this.spawnItems();
+        this.gameLoop = setInterval(() => this.update(), this.config.speed);
+      }
+
+      stop() {
+        if (this.gameLoop) {
+          clearInterval(this.gameLoop);
+          this.gameLoop = null;
+        }
+      }
+
+      pause() {
+        this.isPaused = true;
+      }
+
+      resume() {
+        this.isPaused = false;
+      }
+
+      update() {
+        if (this.isPaused) return;
+
+        this.direction = this.nextDirection;
+
+        const head = {
+          x: this.snake[0].x + this.direction.x,
+          y: this.snake[0].y + this.direction.y
+        };
+
+        // Wrap around
+        if (head.x < 0) head.x = this.gridCount - 1;
+        if (head.x >= this.gridCount) head.x = 0;
+        if (head.y < 0) head.y = this.gridCount - 1;
+        if (head.y >= this.gridCount) head.y = 0;
+
+        // Check collision with self
+        if (this.snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+          this.reset();
+          return;
+        }
+
+        this.snake.unshift(head);
+
+        // Check item collision
+        let ate = false;
+        for (let i = 0; i < this.items.length; i++) {
+          if (this.items[i].x === head.x && this.items[i].y === head.y) {
+            ate = true;
+            const itemType = this.items[i].type;
+            this.score[itemType] = (this.score[itemType] || 0) + 1;
+            this.items.splice(i, 1);
+            this.spawnItems();
+            if (this.config.onCollect) {
+              this.config.onCollect(itemType);
+            }
+            break;
+          }
+        }
+
+        // Check distraction collision
+        for (let i = 0; i < this.distractions.length; i++) {
+          if (this.distractions[i].x === head.x && this.distractions[i].y === head.y) {
+            const itemType = this.distractions[i].type;
+            this.distractions.splice(i, 1);
+            this.spawnItems();
+            if (this.config.onDistraction) {
+              this.config.onDistraction(itemType);
+            }
+            break;
+          }
+        }
+
+        if (!ate) {
+          this.snake.pop();
+        }
+
+        this.draw();
+      }
+
+      reset() {
+        this.snake = [{ x: 16, y: 16 }];
+        this.direction = { x: 1, y: 0 };
+        this.nextDirection = { x: 1, y: 0 };
+      }
+
+      spawnItems() {
+        // Spawn task items (randomized so the player must pay attention)
+        if (this.config.taskItems) {
+            const allTypes = Object.keys(this.config.taskItems);
+
+            // Keep around 5 task items visible at all times
+            while (this.items.length < 5) {
+                const randomType = allTypes[Math.floor(Math.random() * allTypes.length)];
+                this.items.push({
+                x: Math.floor(Math.random() * this.gridCount),
+                y: Math.floor(Math.random() * this.gridCount),
+                type: randomType
+                });
+            }
+        }
+
+
+        // Spawn distractions
+        if (this.config.distractionItems && !this.insightItemsVisible) {
+          const distractionTypes = Object.keys(this.config.distractionItems);
+          while (this.distractions.length < 5) {
+            const type = distractionTypes[Math.floor(Math.random() * distractionTypes.length)];
+            this.distractions.push({
+              x: Math.floor(Math.random() * this.gridCount),
+              y: Math.floor(Math.random() * this.gridCount),
+              type: type
+            });
+          }
+        }
+      }
+
+      showInsightItems() {
+        this.insightItemsVisible = true;
+        this.items = [];
+        this.distractions = [];
+        
+        const insightTypes = Object.keys(this.config.distractionItems);
+        for (let type of insightTypes) {
+          this.distractions.push({
+            x: Math.floor(Math.random() * this.gridCount),
+            y: Math.floor(Math.random() * this.gridCount),
+            type: type
+          });
+        }
+      }
+
+      draw() {
+        this.ctx.fillStyle = '#1F2937';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Draw snake
+        this.snake.forEach((segment, index) => {
+          if (index === 0) {
+            this.drawSnakeHead(segment);
+          } else {
+            this.ctx.fillStyle = '#34D399';
+            this.ctx.fillRect(
+              segment.x * this.gridSize,
+              segment.y * this.gridSize,
+              this.gridSize,
+              this.gridSize
+            );
+          }
+        });
+
+        // Draw items
+        this.ctx.font = '16px Arial';
+        this.items.forEach(item => {
+          this.ctx.fillText(
+            item.type,
+            item.x * this.gridSize + 2,
+            item.y * this.gridSize + 16
+          );
+        });
+
+        // Draw distractions
+        this.distractions.forEach(item => {
+          this.ctx.fillText(
+            item.type,
+            item.x * this.gridSize + 2,
+            item.y * this.gridSize + 16
+          );
+        });
+      }
+
+      drawSnakeHead(head) {
+        const x = head.x * this.gridSize;
+        const y = head.y * this.gridSize;
+        
+        // head
+        this.ctx.fillStyle = '#34D399';
+        this.ctx.fillRect(x, y, this.gridSize, this.gridSize);
+        
+        // eyes
+        this.ctx.fillStyle = 'white';
+        if (this.direction.x === 1) { // right
+          this.ctx.fillRect(x + 12, y + 3, 5, 5);
+          this.ctx.fillRect(x + 12, y + 12, 5, 5);
+        } else if (this.direction.x === -1) { // left
+          this.ctx.fillRect(x + 3, y + 3, 5, 5);
+          this.ctx.fillRect(x + 3, y + 12, 5, 5);
+        } else if (this.direction.y === -1) { // up
+          this.ctx.fillRect(x + 3, y + 3, 5, 5);
+          this.ctx.fillRect(x + 12, y + 3, 5, 5);
+        } else { // down
+          this.ctx.fillRect(x + 3, y + 12, 5, 5);
+          this.ctx.fillRect(x + 12, y + 12, 5, 5);
+        }
+        
+        // tongue flicker
+        if (Math.floor(Date.now() / 200) % 2 === 0) {
+          this.ctx.fillStyle = '#EF4444';
+          if (this.direction.x === 1) this.ctx.fillRect(x + 20, y + 8, 7, 4);
+          else if (this.direction.x === -1) this.ctx.fillRect(x - 7, y + 8, 7, 4);
+          else if (this.direction.y === -1) this.ctx.fillRect(x + 8, y - 7, 4, 7);
+          else this.ctx.fillRect(x + 8, y + 20, 4, 7);
+        }
+      }
+
+      drawIdle() {
+        const time = Date.now() / 1000;
+        this.snake[0].x = 16 + Math.sin(time) * 4;
+        this.snake[0].y = 16 + Math.cos(time * 0.5) * 4;
+        
+        if (Math.sin(time * 2) > 0) {
+          this.direction = { x: 1, y: 0 };
+        } else {
+          this.direction = { x: -1, y: 0 };
+        }
+        
+        this.draw();
+      }
+    }
+
+    // Attract screen
+    let attractGame;
+    function initAttractScreen() {
+        attractGame = new SnakeGame('attract-canvas', { speed: 150 });
+        function animateAttract() {
+            if (currentScreen === 'attract-screen') {
+            attractGame.runIdleSnake();
+            requestAnimationFrame(animateAttract);
+            }
+        }
+        animateAttract();
+    }
+
+
+
+    // Level 1
+    let level1Game;
+    let level1Timer;
+    let level1Time = 45;
+
+    function startLevel1() {
+        navigateTo('lvl1-game');
+        level1Time = 45;
+
+        level1Game = new SnakeGame('lvl1-canvas', {
+            speed: 150,
+            taskItems: { '📖': 5 },
+            onCollect: (type) => {
+            updateLevel1Tasks();
+            if (level1Game.score['📖'] >= 5) {
+                level1Game.stop();
+                clearInterval(level1Timer);
+                setTimeout(() => navigateTo('lvl2-intro'), 1000);
+            }
+            }
+        });
+
+        // Override spawnItems for Level 1: spawn exactly 5 📖 once, no respawn
+        level1Game.spawnItems = function () {
+            if (this._l1Spawned) return;
+            this._l1Spawned = true;
+            this.items = [];
+            for (let i = 0; i < 5; i++) {
+            let placed = false;
+            while (!placed) {
+                const x = Math.floor(Math.random() * this.gridCount);
+                const y = Math.floor(Math.random() * this.gridCount);
+                const occupied =
+                this.snake.some(s => s.x === x && s.y === y) ||
+                this.items.some(it => it.x === x && it.y === y);
+                if (!occupied) {
+                this.items.push({ x, y, type: '📖' });
+                placed = true;
+                }
+            }
+            }
+        };
+
+        level1Game.start();
+        updateLevel1Tasks();
+
+        level1Timer = setInterval(() => {
+            level1Time--;
+            document.getElementById('lvl1-timer').textContent = formatTime(level1Time);
+            if (level1Time <= 0) {
+            level1Game.stop();
+            clearInterval(level1Timer);
+            navigateTo('lvl2-intro');
+            }
+        }, 1000);
+        }
+
+
+    function updateLevel1Tasks() {
+      const count = level1Game.score['📖'] || 0;
+      document.getElementById('lvl1-tasks').textContent = `COLLECT: 📖 ${count} / 5`;
+    }
+
+    // Level 2
+    let level2Game;
+    let level2Timer;
+    let level2Time = 60;
+
+    function startLevel2() {
+      navigateTo('lvl2-game');
+      level2Time = 60;
+      
+
+        level2Game = new SnakeGame('lvl2-canvas', {
+        speed: 150,
+        taskItems: { '📖': 5, '📝': 4, '🧠': 3 },
+        onCollect: (type) => {
+            updateLevel2Tasks();
+
+            // ✔ FIXED: check each category requirement correctly
+            const done =
+                (level2Game.score['📖'] || 0) >= 5 &&
+                (level2Game.score['📝'] || 0) >= 4 &&
+                (level2Game.score['🧠'] || 0) >= 3;
+
+            if (done) {
+                level2Game.stop();
+                clearInterval(level2Timer);
+                setTimeout(() => navigateTo('lvl3-intro'), 1000);
+            } else {
+                level2Game.spawnItems();  // refill items
+            }
+        }
+
+        });
+
+        // Override spawnItems for Level 2: maintain a visible pool larger than needed
+        level2Game.spawnItems = function () {
+        const visiblePool = { '📖': 3, '📝': 3, '🧠': 3 }; // more than needed (5/4/3)
+        const types = Object.keys(visiblePool);
+
+        // ensure counts for each type meet the visible pool
+        for (const t of types) {
+            let existing = this.items.filter(it => it.type === t).length;
+            while (existing < visiblePool[t]) {
+            let placed = false;
+            while (!placed) {
+                const x = Math.floor(Math.random() * this.gridCount);
+                const y = Math.floor(Math.random() * this.gridCount);
+                const occupied =
+                this.snake.some(s => s.x === x && s.y === y) ||
+                this.items.some(it => it.x === x && it.y === y);
+                if (!occupied) {
+                this.items.push({ x, y, type: t });
+                placed = true;
+                existing++;
+                }
+            }
+            }
+        }
+
+        // OPTIONAL: if there are any extra beyond the pool (e.g., from previous state), trim them
+        for (const t of types) {
+            let extra = this.items.filter(it => it.type === t);
+            while (extra.length > visiblePool[t]) {
+            const idx = this.items.findIndex(it => it.type === t);
+            if (idx > -1) this.items.splice(idx, 1);
+            extra = this.items.filter(it => it.type === t);
+            }
+        }
+        };
+
+        level2Game.start();
+
+
+      updateLevel2Tasks();
+      
+      level2Timer = setInterval(() => {
+        level2Time--;
+        document.getElementById('lvl2-timer').textContent = formatTime(level2Time);
+        if (level2Time <= 0) {
+          level2Game.stop();
+          clearInterval(level2Timer);
+          navigateTo('lvl3-intro');
+        }
+      }, 1000);
+    }
+
+    function updateLevel2Tasks() {
+      const book = level2Game.score['📖'] || 0;
+      const paper = level2Game.score['📝'] || 0;
+      const brain = level2Game.score['🧠'] || 0;
+      document.getElementById('lvl2-tasks').textContent = `COLLECT: 📖 ${book}/5, 📝 ${paper}/4, 🧠 ${brain}/3`;
+    }
+
+    // Level 3
+    let level3Game;
+    let level3Timer;
+    let level3Time = 60;
+
+    function startLevel3() {
+      navigateTo('lvl3-game');
+      level3Time = 60;
+      
+      level3Game = new SnakeGame('lvl3-canvas', {
+        speed: 100,
+        taskItems: { '📖': 5, '📝': 4, '🧠': 3 },
+        distractionItems: { '📺': true, '🎵': true, '☕': true, '🍕': true, '📱': true, '🛌': true },
+        onCollect: (type) => {
+          updateLevel3Tasks();
+
+          // Check each requirement individually
+          const done =
+            (level3Game.score['📖'] || 0) >= 5 &&
+            (level3Game.score['📝'] || 0) >= 4 &&
+            (level3Game.score['🧠'] || 0) >= 3;
+
+          if (done) {
+            level3Game.stop();
+            clearInterval(level3Timer);
+            setTimeout(() => navigateTo('reflection-success'), 1000);
+          } else {
+            level3Game.spawnItems();
+          }
+        },
+
+        onDistraction: (type) => {
+          showPenaltyOverlay();
+        }
+      });
+
+            // Override spawnItems for Level 3 so all item types always appear
+      level3Game.spawnItems = function () {
+        const visiblePool = { '📖': 3, '📝': 3, '🧠': 3 };
+        const types = Object.keys(visiblePool);
+
+        // Ensure required number of each type remains on screen
+        for (const t of types) {
+          let existing = this.items.filter(it => it.type === t).length;
+          while (existing < visiblePool[t]) {
+            let placed = false;
+            while (!placed) {
+              const x = Math.floor(Math.random() * this.gridCount);
+              const y = Math.floor(Math.random() * this.gridCount);
+              const occupied =
+                this.snake.some(s => s.x === x && s.y === y) ||
+                this.items.some(it => it.x === x && it.y === y) ||
+                this.distractions.some(it => it.x === x && it.y === y);
+              if (!occupied) {
+                this.items.push({ x, y, type: t });
+                placed = true;
+                existing++;
+              }
+            }
+          }
+        }
+
+        // Ensure lots of distractions too — 6 at all times
+        if (this.config.distractionItems && !this.insightItemsVisible) {
+          const distractionTypes = Object.keys(this.config.distractionItems);
+          while (this.distractions.length < 6) {
+            const type = distractionTypes[Math.floor(Math.random() * distractionTypes.length)];
+            let placed = false;
+            while (!placed) {
+              const x = Math.floor(Math.random() * this.gridCount);
+              const y = Math.floor(Math.random() * this.gridCount);
+              const occupied =
+                this.snake.some(s => s.x === x && s.y === y) ||
+                this.items.some(it => it.x === x && it.y === y) ||
+                this.distractions.some(it => it.x === x && it.y === y);
+              if (!occupied) {
+                this.distractions.push({ x, y, type });
+                placed = true;
+              }
+            }
+          }
+        }
+      };
+
+      
+      level3Game.start();
+      updateLevel3Tasks();
+      
+      level3Timer = setInterval(() => {
+        level3Time--;
+        document.getElementById('lvl3-timer').textContent = formatTime(level3Time);
+        if (level3Time <= 0) {
+          level3Game.stop();
+          clearInterval(level3Timer);
+          navigateTo('reflection-failure');
+        }
+      }, 1000);
+    }
+
+    function updateLevel3Tasks() {
+      const book = level3Game.score['📖'] || 0;
+      const paper = level3Game.score['📝'] || 0;
+      const brain = level3Game.score['🧠'] || 0;
+      document.getElementById('lvl3-tasks').textContent = `COLLECT: 📖 ${book}/5, 📝 ${paper}/4, 🧠 ${brain}/3`;
+    }
+
+    function showPenaltyOverlay() {
+      clearInterval(level3Timer);
+      level3Game.pause();
+      
+      const overlay = document.getElementById('overlay');
+      overlay.className = 'overlay penalty active';
+      document.getElementById('overlay-text').textContent = "-5 SECONDS! Don't procrastinate!";
+      
+      playFailSound();
+      
+      setTimeout(() => {
+        overlay.classList.remove('active');
+        level3Time = Math.max(0, level3Time - 5);
+        level3Game.resume();
+        
+        level3Timer = setInterval(() => {
+          level3Time--;
+          document.getElementById('lvl3-timer').textContent = formatTime(level3Time);
+          if (level3Time <= 0) {
+            level3Game.stop();
+            clearInterval(level3Timer);
+            navigateTo('reflection-failure');
+          }
+        }, 1000);
+      }, 2000);
+    }
+
+      // Good Game
+      let goodGame;
+      let goodGamePhase = 'task'; // 'task', 'pause', 'explore', 'done'
+      let pauseTimer;
+      let pauseTime = 90;
+      let exploreNeedsBreak = false;
+
+      function startGoodGame() {
+        navigateTo('good-game');
+        goodGamePhase = 'task';
+        collectedBadges = [];
+        exploreNeedsBreak = false;
+
+        goodGame = new SnakeGame('good-canvas', {
+          speed: 200,
+          taskItems: { '📖': 3 },
+          distractionItems: {
+            '📺': true,
+            '🎵': true,
+            '☕': true,
+            '🍕': true,
+            '📱': true,
+            '🛌': true
+          },
+          onCollect: (type) => {
+            if (goodGamePhase === 'task') {
+              updateGoodTasks();
+              if ((goodGame.score['📖'] || 0) >= 3) {
+                transitionToPause();
+              }
+            }
+          },
+          onDistraction: (type) => {
+            // during task phase ignore distractions mechanically
+            if (goodGamePhase === 'pause') {
+              showInsightOverlay(type);
+            }
+          }
+        });
+
+        goodGame.start();
+        updateGoodTasks();
+      }
+
+      function transitionToPause() {
+        goodGamePhase = 'pause';
+        goodGame.pause();
+
+        // Step 1: popup telling user to rest
+        const overlay = document.getElementById('overlay');
+        overlay.className = 'overlay insight active';
+        document.getElementById('overlay-text').textContent =
+          "You’ve finished your task. Now rest — you need a break.";
+
+        // After 3 seconds, remove popup
+        setTimeout(() => {
+          overlay.className = 'overlay'; // remove active + insight
+          goodGame.resume();
+
+          // Step 2: Wait for the user to collect ONE distraction
+          goodGame.config.onDistraction = (type) => {
+            goodGame.pause();
+
+            // Step 3: reflection popup + continue button
+            const overlay2 = document.getElementById('overlay');
+            overlay2.className = 'overlay insight active';
+            document.getElementById('overlay-text').innerHTML =
+              "It was good to take a break after your task.<br><br>" +
+              "<button class='button' onclick=\"closeOverlayAndGoExplore()\">CONTINUE</button>";
+
+            try { playChimeSound(); } catch (e) {}
+          };
+
+        }, 3000);
+      }
+
+      function closeOverlayAndGoExplore() {
+        const overlay = document.getElementById('overlay');
+        overlay.className = 'overlay'; // fully reset
+        navigateTo('explore-intro');
+      }
+
+      function startExplorePhase() {
+        // 🟦 IMPORTANT: actually enter the game again
+        navigateTo('good-game');
+
+        const overlay = document.getElementById('overlay');
+        overlay.className = 'overlay';
+
+        goodGamePhase = 'explore';
+        exploreNeedsBreak = false;
+
+        document.getElementById('good-tasks').textContent = "YOUR TASK: JUST... EXPLORE.";
+
+        // Hide soft continue button initially
+        const msg = document.getElementById('explore-message');
+        const txt = document.getElementById('explore-text');
+        if (msg) msg.style.display = 'none';
+        if (txt) txt.textContent = "";
+
+        // After 30 seconds show “continue whenever”
+        setTimeout(() => {
+          if (goodGamePhase === 'explore' && msg && txt) {
+            txt.textContent =
+              "There’s no deadline here. Explore as long as you like — continue whenever it feels right.";
+            msg.style.display = 'block';
+          }
+        }, 30000);
+
+        // Collecting a task item → needs break
+        goodGame.config.onCollect = () => {
+          exploreNeedsBreak = true;
+        };
+
+        // Collecting a distraction → gives insight but only if break was needed
+        goodGame.config.onDistraction = (type) => {
+          if (exploreNeedsBreak) {
+            exploreNeedsBreak = false;
+
+            goodGame.pause();
+
+            const overlay2 = document.getElementById('overlay');
+            overlay2.className = 'overlay insight active';
+            document.getElementById('overlay-text').textContent =
+              getRandomInsight(type);
+
+            try { playChimeSound(); } catch (e) {}
+
+            setTimeout(() => {
+              overlay2.className = 'overlay';
+              goodGame.resume();
+            }, 5000);
+          }
+        };
+
+        goodGame.resume();
+      }
+
+      function finishExplorePhase() {
+        goodGamePhase = 'done';
+        goodGame.stop();
+        navigateTo('final-reflection');
+      }
+
+      function getRandomInsight(type) {
+        const msgs = insightMessages[type] || [];
+        return msgs.length ? msgs[Math.floor(Math.random() * msgs.length)] : "";
+      }
+
+      function updateGoodTasks() {
+        const count = goodGame.score['📖'] || 0;
+        document.getElementById('good-tasks').textContent = `COLLECT: 📖 ${count} / 3`;
+      }
+
+      function showInsightOverlay(type) {
+        clearInterval(pauseTimer);
+        goodGame.pause();
+
+        const msgs = insightMessages[type];
+        const message = msgs[Math.floor(Math.random() * msgs.length)];
+
+        const overlay = document.getElementById('overlay');
+        overlay.className = 'overlay insight active';
+        document.getElementById('overlay-text').textContent = message;
+
+        try { playChimeSound(); } catch (e) {}
+
+        setTimeout(() => {
+          overlay.className = 'overlay';
+          goodGame.resume();
+
+          pauseTimer = setInterval(() => {
+            pauseTime--;
+            if (pauseTime <= 0) {
+              goodGame.stop();
+              clearInterval(pauseTimer);
+              showFinalReflection();
+            }
+          }, 1000);
+        }, 5000);
+      }
+
+
+
+    ////////////////////////////////////////////////////////////
+
+    function showFinalReflection() {
+        navigateTo('final-reflection');
+    }
+
+
+    // Utility
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // Initialize
+    initAttractScreen();
+  </script>
+</body>
+</html>
