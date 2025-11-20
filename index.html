@@ -92,11 +92,22 @@
       z-index: 1000;
     }
 
-        /* Hide reset button on attract screen and final reflection screen */
+    /* Hide reset button on attract screen and final reflection screen */
     #attract-screen.active ~ #reset-button,
     #final-reflection.active ~ #reset-button {
         display: none !important;
     }
+
+    .fade-in {
+      opacity: 0;
+      animation: fadeInSmooth 1.5s forwards;
+    }
+
+    @keyframes fadeInSmooth {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
 
 
 
@@ -204,7 +215,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 40px;
     }
 
     .list-item {
@@ -320,7 +331,7 @@
     <div class="list-item">3 🧠</div>
     <p class="text warning">Distractions are now active.</p>
     <p class="text warning">Hitting them will cost you time. Try not to procrastinate!</p>
-    <p class="text">Timer: 90 Seconds</p>
+    <p class="text">Timer: 60 Seconds</p>
     <button class="button" onclick="startLevel3()">START LEVEL 3</button>
   </div>
 
@@ -329,7 +340,7 @@
     <div class="game-container">
       <div class="game-header">
         <h2 class="game-title stress">Level 3: STAY FOCUSED!</h2>
-        <div class="timer stress" id="lvl3-timer">01:30</div>
+        <div class="timer stress" id="lvl3-timer">01:00</div>
       </div>
       <div class="task-list" id="lvl3-tasks">COLLECT: 📖 0/5, 📝 0/4, 🧠 0/3</div>
       <canvas id="lvl3-canvas" width="640" height="640"></canvas>
@@ -434,13 +445,9 @@
 
           <p class="reflection-text" 
             style="animation-delay: 3.5s; font-size: 38px; color: #6DA4FF; margin-bottom: 20px;">
-              Procrastination is inevitable —
+              Procrastination is inevitable — <span class="reflection-text" style="animation-delay: 5s; font-size: 38px; color: #6DA4FF; margin-bottom: 50px;">but it can be generative and inspiring.</span>
           </p>
 
-          <p class="reflection-text" 
-            style="animation-delay: 5s; font-size: 38px; color: #6DA4FF; margin-bottom: 50px;">
-              but it can be generative and inspiring.
-          </p>
 
           <p class="reflection-text" 
             style="animation-delay: 6.5s; font-size: 36px; color: #6DA4FF;">
@@ -1291,8 +1298,12 @@
         // Hide soft continue button initially
         const msg = document.getElementById('explore-message');
         const txt = document.getElementById('explore-text');
-        if (msg) msg.style.display = 'none';
+        if (msg) {
+            msg.style.display = 'none';
+            msg.classList.remove('fade-in'); // ← crucial line
+        }
         if (txt) txt.textContent = "";
+
 
         // After 30 seconds show “continue whenever”
         setTimeout(() => {
@@ -1300,8 +1311,10 @@
             txt.textContent =
               "There’s no deadline here. Explore as long as you like — continue whenever it feels right.";
             msg.style.display = 'block';
+            msg.classList.add('fade-in');
           }
         }, 30000);
+
 
         // Collecting a task item → needs break
         goodGame.config.onCollect = () => {
