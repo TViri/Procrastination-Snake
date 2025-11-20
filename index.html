@@ -7,6 +7,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/x-icon" href="procrastinating.ico">
   <style>
+
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
     * {
       margin: 0;
       padding: 0;
@@ -14,9 +18,9 @@
     }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background: #000;
-      color: #fff;
+      font-family: 'Rubik', sans-serif;
+      background: #0D0F1A;
+      color: #E7D5BD;
       overflow: hidden;
       width: 100vw;
       height: 100vh;
@@ -42,6 +46,7 @@
     }
 
     .title {
+      font-family: 'Orbitron', 'sans-serif';
       font-size: 48px;
       margin-bottom: 20px;
       text-align: center;
@@ -49,7 +54,7 @@
 
     .subtitle {
       font-size: 24px;
-      color: #9CA3AF;
+      color: #6DA4FF;
       margin-bottom: 40px;
     }
 
@@ -64,24 +69,36 @@
     .button {
       padding: 15px 40px;
       font-size: 20px;
-      background: #3B82F6;
-      color: white;
+      background: #1A0088;
+      color: #E7D5BD;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       margin-top: 30px;
-      font-family: 'Inter', sans-serif;
+      font-family: 'Orbitron', sans-serif;
       transition: all 0.3s;
     }
 
     .button:hover {
-      background: #2563EB;
+      background: #3C33FF;
       transform: scale(1.05);
     }
 
     .button.pulse {
       animation: pulse 2s infinite;
     }
+
+    .overlay {
+      z-index: 1000;
+    }
+
+        /* Hide reset button on attract screen and final reflection screen */
+    #attract-screen.active ~ #reset-button,
+    #final-reflection.active ~ #reset-button {
+        display: none !important;
+    }
+
+
 
     @keyframes pulse {
       0%, 100% { transform: scale(1); }
@@ -104,12 +121,12 @@
     }
 
     .game-title {
+      font-family: 'Orbitron', 'sans-serfif';
       font-size: 32px;
     }
 
     .game-title.stress {
-      font-family: Impact, 'Arial Black', sans-serif;
-      color: #EF4444;
+      color: #FF5E32;
       letter-spacing: 2px;
     }
 
@@ -119,7 +136,7 @@
     }
 
     .timer.stress {
-      color: #EF4444;
+      color: #FF5E32;
       font-size: 32px;
     }
 
@@ -151,11 +168,11 @@
     }
 
     .overlay.penalty {
-      background: rgba(239, 68, 68, 0.9);
+      background: rgba(255, 94, 50, 0.9);
     }
 
     .overlay.insight {
-      background: rgba(245, 158, 11, 0.9);
+      background: rgba(109, 164, 255, 0.9);
     }
 
     .overlay-text {
@@ -174,7 +191,6 @@
     .reflection-text {
       opacity: 0;
       animation: fadeInText 1.5s forwards;
-      margin: 20px 0;
       max-width: 800px;
       text-align: center;
       font-size: 24px;
@@ -197,7 +213,7 @@
     }
 
     .warning {
-      color: #EF4444;
+      color: #FF5E32;
       font-weight: bold;
     }
 
@@ -231,7 +247,7 @@
         }
 
         .timer.stress {
-        color: #EF4444;
+        color: #FF5E32;
         font-size: 32px;
         animation: blinkTimer 1s infinite;
     }
@@ -240,6 +256,9 @@
   </style>
 </head>
 <body>
+
+  
+
 
   <!-- Screen 1: Attract -->
   <div id="attract-screen" class="screen active">
@@ -294,7 +313,7 @@
 
   <!-- Screen 6: Level 3 Intro -->
   <div id="lvl3-intro" class="screen">
-    <h1 class="title" style="font-family: Impact, 'Arial Black', sans-serif; color: #EF4444; letter-spacing: 2px;">Level 3: STAY FOCUSED!</h1>
+    <h1 class="title" style="font-family: 'Orbitron', sans-serif; color: #FF5E32; letter-spacing: 2px;">Level 3: STAY FOCUSED!</h1>
     <p class="text">Same task. New problems.</p>
     <div class="list-item">5 📖</div>
     <div class="list-item">4 📝</div>
@@ -320,7 +339,7 @@
   <!-- Screen 8A: Reflection Failure -->
   <div id="reflection-failure" class="screen">
     <div class="reflection-container">
-      <h1 class="reflection-text" style="color: #EF4444; font-size: 48px; animation-delay: 0s;">TASK FAILED</h1>
+      <h1 class="reflection-text" style="color: #FF5E32; font-family: 'Orbitron', sans-serif; font-size: 48px; animation-delay: 0s;">TASK FAILED</h1>
       <p class="reflection-text" style="animation-delay: 1.5s;">You ran out of time.</p>
       <p class="reflection-text" style="animation-delay: 3s;">You might have felt: Stressed. Anxious. Punished.</p>
       <p class="reflection-text" style="animation-delay: 4.5s; font-size: 32px;">This is TOXIC PRODUCTIVITY.</p>
@@ -333,7 +352,7 @@
   <!-- Screen 8B: Reflection Success -->
   <div id="reflection-success" class="screen">
     <div class="reflection-container">
-      <h1 class="reflection-text" style="color: #34D399; font-size: 48px; animation-delay: 0s;">TASK COMPLETE!</h1>
+      <h1 class="reflection-text" style="color: #B6CF4F; font-family: 'Orbitron', sans-serif; font-size: 48px; animation-delay: 0s;">TASK COMPLETE!</h1>
       <p class="reflection-text" style="animation-delay: 1.5s;">...but how did you feel?</p>
       <p class="reflection-text" style="animation-delay: 3s;">Rushing? Anxious? Stressed?</p>
       <p class="reflection-text" style="animation-delay: 4.5s;">You were punished for every 'distraction.' You had no room to breathe.</p>
@@ -346,7 +365,7 @@
 
   <!-- Screen 9: Good Game Intro -->
   <div id="good-intro" class="screen">
-    <h1 class="title" style="color: #3B82F6;">A New Task</h1>
+    <h1 class="title" style="color: #6DA4FF;">A New Task</h1>
     <p class="text">The rules are different now.</p>
     <p class="text">First, collect 3 📖 items.</p>
     <button class="button" onclick="startGoodGame()">START</button>
@@ -356,7 +375,7 @@
   <div id="good-game" class="screen">
       <div class="game-container">
           <div class="game-header">
-              <h2 class="game-title" style="color: #3B82F6;">A New Task</h2>
+              <h2 class="game-title" style="color: #6DA4FF;">A New Task</h2>
               <div class="task-list" id="good-tasks">COLLECT: 📖 0 / 3</div>
           </div>
 
@@ -392,7 +411,7 @@
 
   <!-- Screen 10B: Explore Intro -->
   <div id="explore-intro" class="screen">
-      <h1 class="title" style="color:#3B82F6;">A New Task</h1>
+      <h1 class="title" style="color:#6DA4FF;">A New Task</h1>
       <p class="text">Just... explore.</p>
       <button class="button" onclick="startExplorePhase()">CONTINUE</button>
   </div>
@@ -414,17 +433,17 @@
           </p>
 
           <p class="reflection-text" 
-            style="animation-delay: 3.5s; font-size: 38px; color: #F59E0B; margin-bottom: 20px;">
+            style="animation-delay: 3.5s; font-size: 38px; color: #6DA4FF; margin-bottom: 20px;">
               Procrastination is inevitable —
           </p>
 
           <p class="reflection-text" 
-            style="animation-delay: 5s; font-size: 38px; color: #F59E0B; margin-bottom: 50px;">
+            style="animation-delay: 5s; font-size: 38px; color: #6DA4FF; margin-bottom: 50px;">
               but it can be generative and inspiring.
           </p>
 
           <p class="reflection-text" 
-            style="animation-delay: 6.5s; font-size: 36px; color: #F59E0B;">
+            style="animation-delay: 6.5s; font-size: 36px; color: #6DA4FF;">
               Delay is not failure — it's a liminal space for creativity.
           </p>
 
@@ -442,6 +461,26 @@
   <div id="overlay" class="overlay">
     <div class="overlay-text" id="overlay-text"></div>
   </div>
+
+  <!-- Always-visible Reset button (hidden by overlay automatically) -->
+  <button id="reset-button"
+      onclick="hardReset()"
+      style="
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        background: #6B7280;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        z-index: 500; /* Below overlay (1000), above screens */
+        opacity: 0.8;
+      ">
+    RESET GAME
+  </button>
 
   <script>
     // Global state
@@ -529,6 +568,24 @@
       navigateTo('attract-screen');
       initAttractScreen();
     }
+
+    function hardReset() {
+        // Stop any running game loop
+        try { if (attractGame) attractGame.stop?.(); } catch (e) {}
+        try { if (level1Game) level1Game.stop?.(); } catch (e) {}
+        try { if (level2Game) level2Game.stop?.(); } catch (e) {}
+        try { if (level3Game) level3Game.stop?.(); } catch (e) {}
+        try { if (goodGame) goodGame.stop?.(); } catch (e) {}
+
+        // Hide overlay if it was active
+        const overlay = document.getElementById('overlay');
+        overlay.className = 'overlay';
+
+        // Navigate back to attract
+        navigateTo('attract-screen');
+        initAttractScreen();
+    }
+
 
     // Snake Game Class
     class SnakeGame {
@@ -755,7 +812,7 @@
           if (index === 0) {
             this.drawSnakeHead(segment);
           } else {
-            this.ctx.fillStyle = '#34D399';
+            this.ctx.fillStyle = '#B6CF4F';
             this.ctx.fillRect(
               segment.x * this.gridSize,
               segment.y * this.gridSize,
@@ -790,7 +847,7 @@
         const y = head.y * this.gridSize;
         
         // head
-        this.ctx.fillStyle = '#34D399';
+        this.ctx.fillStyle = '#B6CF4F';
         this.ctx.fillRect(x, y, this.gridSize, this.gridSize);
         
         // eyes
@@ -811,7 +868,7 @@
         
         // tongue flicker
         if (Math.floor(Date.now() / 200) % 2 === 0) {
-          this.ctx.fillStyle = '#EF4444';
+          this.ctx.fillStyle = '#FF5E32';
           if (this.direction.x === 1) this.ctx.fillRect(x + 20, y + 8, 7, 4);
           else if (this.direction.x === -1) this.ctx.fillRect(x - 7, y + 8, 7, 4);
           else if (this.direction.y === -1) this.ctx.fillRect(x + 8, y - 7, 4, 7);
