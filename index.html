@@ -276,7 +276,7 @@
     <h1 class="title">The Liminal Space of Delay</h1>
     <p class="subtitle">An Interactive Reflection</p>
     <canvas id="attract-canvas" width="640" height="640"></canvas>
-    <button class="button pulse" onclick="navigateTo('lvl1-intro')">Press START to Begin</button>
+    <button id="btn-start" class="button pulse" onclick="navigateTo('lvl1-intro')">Press 1 to Begin</button>
   </div>
 
   <!-- Screen 2: Level 1 Intro -->
@@ -284,7 +284,7 @@
     <h1 class="title">Level 1: The Task</h1>
     <p class="text">Your goal is to collect 5 📖 items.</p>
     <p class="text">Timer: 45 Seconds</p>
-    <button class="button" onclick="startLevel1()">START LEVEL 1</button>
+    <button id="btn-lvl1" class="button" onclick="startLevel1()">PRESS 1 TO START</button>
   </div>
 
   <!-- Screen 3: Level 1 Game -->
@@ -307,7 +307,7 @@
     <div class="list-item">4 📝</div>
     <div class="list-item">3 🧠</div>
     <p class="text">Timer: 60 Seconds</p>
-    <button class="button" onclick="startLevel2()">START LEVEL 2</button>
+    <button id="btn-lvl2" class="button" onclick="startLevel2()">START LEVEL 2</button>
   </div>
 
   <!-- Screen 5: Level 2 Game -->
@@ -332,7 +332,7 @@
     <p class="text warning">Distractions are now active.</p>
     <p class="text warning">Hitting them will cost you time. Try not to procrastinate!</p>
     <p class="text">Timer: 60 Seconds</p>
-    <button class="button" onclick="startLevel3()">START LEVEL 3</button>
+    <button id="btn-lvl3" class="button" onclick="startLevel3()">START LEVEL 3</button>
   </div>
 
   <!-- Screen 7: Level 3 Game -->
@@ -356,7 +356,7 @@
       <p class="reflection-text" style="animation-delay: 4.5s; font-size: 32px;">This is TOXIC PRODUCTIVITY.</p>
       <p class="reflection-text" style="animation-delay: 6s;">We are taught that any pause is a waste.</p>
       <p class="reflection-text" style="animation-delay: 7.5s;">But what if the delay is the process?</p>
-      <button class="button" style="animation-delay: 9s; opacity: 0; animation: fadeInText 1.5s 9s forwards;" onclick="navigateTo('good-intro')">Press CONTINUE to reframe</button>
+      <button id="btn-reflect" class="button" style="animation-delay: 9s; opacity: 0; animation: fadeInText 1.5s 9s forwards;" onclick="navigateTo('good-intro')">Press CONTINUE to reframe</button>
     </div>
   </div>
 
@@ -370,7 +370,7 @@
       <p class="reflection-text" style="animation-delay: 6s; font-size: 32px;">This is TOXIC PRODUCTIVITY.</p>
       <p class="reflection-text" style="animation-delay: 7.5s;">We are taught that any pause is a waste.</p>
       <p class="reflection-text" style="animation-delay: 9s;">But what if the delay is the process?</p>
-      <button class="button" style="animation-delay: 10.5s; opacity: 0; animation: fadeInText 1.5s 10.5s forwards;" onclick="navigateTo('good-intro')">Press CONTINUE to reframe</button>
+      <button id="btn-reflect" class="button" style="animation-delay: 10.5s; opacity: 0; animation: fadeInText 1.5s 10.5s forwards;" onclick="navigateTo('good-intro')">Press CONTINUE to reframe</button>
     </div>
   </div>
 
@@ -379,7 +379,7 @@
     <h1 class="title" style="color: #6DA4FF;">A New Task</h1>
     <p class="text">The rules are different now.</p>
     <p class="text">First, collect 3 📖 items.</p>
-    <button class="button" onclick="startGoodGame()">START</button>
+    <button id="btn-good-start" class="button" onclick="startGoodGame()">START</button>
   </div>
 
   <!-- Screen 10: Good Game -->
@@ -408,7 +408,7 @@
                 <!-- inserted by JS -->
             </p>
             
-            <button class="button" style="font-size:18px; padding:10px 20px;"
+            <button id="btn-explore" class="button" style="font-size:18px; padding:10px 20px;"
                 onclick="finishExplorePhase()">
                 CONTINUE
             </button>
@@ -424,7 +424,7 @@
   <div id="explore-intro" class="screen">
       <h1 class="title" style="color:#6DA4FF;">A New Task</h1>
       <p class="text">Just... explore.</p>
-      <button class="button" onclick="startExplorePhase()">CONTINUE</button>
+      <button id="btn-explore-intro" class="button" onclick="startExplorePhase()">CONTINUE</button>
   </div>
 
 
@@ -454,7 +454,7 @@
               Delay is not failure — it's a liminal space for creativity.
           </p>
 
-          <button class="button"
+          <button id="btn-finish" class="button"
                   style="animation-delay: 8s; opacity: 0; animation: fadeInText 1.5s 8s forwards; margin-top: 60px;"
                   onclick="reset()">
               FINISH
@@ -486,13 +486,123 @@
         z-index: 500; /* Below overlay (1000), above screens */
         opacity: 0.8;
       ">
-    RESET GAME
+    PRESS 2 TO RESET
   </button>
 
   <script>
+
+    let buttonCooldown = false;
+    const BUTTON_COOLDOWN_TIME = 150; // milliseconds
+
+
+    let prevButton0 = false;   // UI continue/start button
+    let prevButton1 = false;   // Reset button
+
+
+
+    window.addEventListener("gamepadconnected", () => {
+      console.log("Gamepad connected!");
+
+      setInterval(() => {
+        const gp = navigator.getGamepads()[0];
+        if (!gp) return;
+
+        // Movement handler (only if a game is active)
+        if (currentGame) {
+          const x = gp.axes[0];
+          const y = gp.axes[1];
+
+          if (x < -0.5 && currentGame.direction.x === 0)
+            currentGame.nextDirection = { x: -1, y: 0 };
+
+          else if (x > 0.5 && currentGame.direction.x === 0)
+            currentGame.nextDirection = { x: 1, y: 0 };
+
+          else if (y < -0.5 && currentGame.direction.y === 0)
+            currentGame.nextDirection = { x: 0, y: -1 };
+
+          else if (y > 0.5 && currentGame.direction.y === 0)
+            currentGame.nextDirection = { x: 0, y: 1 };
+        }
+
+        // --- UI CONTINUE/START (Button 0) ---
+        // Rising-edge detection → only fire on NEW presses
+        if (gp.buttons[0].pressed && !prevButton0) {
+            clickVisibleUIButton();
+        }
+        prevButton0 = gp.buttons[0].pressed;
+
+
+
+
+        // --- RESET (Button 1) ---
+        if (gp.buttons[1].pressed && !prevButton1) {
+            const resetBtn = document.getElementById("reset-button");
+
+            const isVisible =
+              resetBtn &&
+              resetBtn.style.display !== "none" &&
+              resetBtn.offsetWidth > 0 &&
+              resetBtn.offsetHeight > 0;
+
+            if (isVisible) resetBtn.click();
+        }
+        prevButton1 = gp.buttons[1].pressed;
+
+
+
+
+
+
+      }, 100);
+    });
+
+
+    const uiButtons = [
+      "btn-start",
+      "btn-lvl1",
+      "btn-lvl2",
+      "btn-lvl3",
+      "btn-reflect",
+      "btn-good-start",
+      "btn-overlay-continue",
+      "btn-explore-intro",
+      "btn-explore",
+      "btn-finish",
+      "reset-button" // reset button will work by controller "button 2"
+    ];
+
+
+
+    function clickVisibleUIButton() {
+      const activeScreen = document.querySelector(".screen.active");
+      if (!activeScreen) return;
+
+      for (const id of uiButtons) {
+        const el = activeScreen.querySelector(`#${id}`);
+        if (el && el.offsetParent !== null) {
+          el.click();
+          return;
+        }
+      }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
     // Global state
     let currentScreen = 'attract-screen';
     let collectedBadges = [];
+    let currentGame = null;
+
 
     // Insight messages
     const insightMessages = {
@@ -921,6 +1031,7 @@
     function startLevel1() {
         navigateTo('lvl1-game');
         level1Time = 45;
+        
 
         level1Game = new SnakeGame('lvl1-canvas', {
             speed: 150,
@@ -934,6 +1045,8 @@
             }
             }
         });
+
+        currentGame = level1Game;
 
         // Override spawnItems for Level 1: spawn exactly 5 📖 once, no respawn
         level1Game.spawnItems = function () {
@@ -985,6 +1098,7 @@
       navigateTo('lvl2-game');
       level2Time = 60;
       
+      
 
         level2Game = new SnakeGame('lvl2-canvas', {
         speed: 150,
@@ -1007,7 +1121,10 @@
             }
         }
 
+        
+
         });
+        currentGame = level2Game;
 
         // Override spawnItems for Level 2: maintain a visible pool larger than needed
         level2Game.spawnItems = function () {
@@ -1077,6 +1194,7 @@
       navigateTo('lvl3-game');
       level3Time = 60;
       
+      
       level3Game = new SnakeGame('lvl3-canvas', {
         speed: 100,
         taskItems: { '📖': 5, '📝': 4, '🧠': 3 },
@@ -1103,6 +1221,8 @@
           showPenaltyOverlay();
         }
       });
+
+      currentGame = level3Game;
 
             // Override spawnItems for Level 3 so all item types always appear
       level3Game.spawnItems = function () {
@@ -1155,6 +1275,35 @@
       
       level3Game.start();
       updateLevel3Tasks();
+
+      // --- EXTRA: spawn an additional distraction every 5 seconds ---
+      level3SpawnInterval = setInterval(() => {
+
+          // Don't spawn if the game is paused (during penalty)
+          if (level3Game.isPaused) return;
+
+          // Create a new distraction at a random free position
+          const distractionTypes = Object.keys(level3Game.config.distractionItems);
+          const type = distractionTypes[Math.floor(Math.random() * distractionTypes.length)];
+
+          let placed = false;
+          while (!placed) {
+              const x = Math.floor(Math.random() * level3Game.gridCount);
+              const y = Math.floor(Math.random() * level3Game.gridCount);
+
+              const occupied =
+                  level3Game.snake.some(s => s.x === x && s.y === y) ||
+                  level3Game.items.some(it => it.x === x && it.y === y) ||
+                  level3Game.distractions.some(it => it.x === x && it.y === y);
+
+              if (!occupied) {
+                  level3Game.distractions.push({ x, y, type });
+                  placed = true;
+              }
+          }
+
+      }, 5000);
+
       
       level3Timer = setInterval(() => {
         level3Time--;
@@ -1207,6 +1356,7 @@
       let pauseTimer;
       let pauseTime = 90;
       let exploreNeedsBreak = false;
+      
 
       function startGoodGame() {
         navigateTo('good-game');
@@ -1241,6 +1391,8 @@
           }
         });
 
+        currentGame = goodGame;
+
         goodGame.start();
         updateGoodTasks();
       }
@@ -1269,7 +1421,7 @@
             overlay2.className = 'overlay insight active';
             document.getElementById('overlay-text').innerHTML =
               "It was good to take a break after your task.<br><br>" +
-              "<button class='button' onclick=\"closeOverlayAndGoExplore()\">CONTINUE</button>";
+              "<button id='btn-overlay-continue' class='button' onclick=\"closeOverlayAndGoExplore()\">CONTINUE</button>";
 
             try { playChimeSound(); } catch (e) {}
           };
@@ -1314,6 +1466,7 @@
             msg.classList.add('fade-in');
           }
         }, 30000);
+
 
 
         // Collecting a task item → needs break
